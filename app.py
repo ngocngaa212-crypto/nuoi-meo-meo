@@ -1,3 +1,5 @@
+import base64
+import os
 import random
 import streamlit as st
 
@@ -7,6 +9,27 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="collapsed",
 )
+
+
+# Hàm load hình ảnh mèo custom
+def get_cat_image_html():
+    image_file = None
+    for possible_name in ["cat.jpg", "cat.png", "cat.jpeg"]:
+        if os.path.exists(possible_name):
+            image_file = possible_name
+            break
+
+    if image_file:
+        try:
+            with open(image_file, "rb") as f:
+                encoded_string = base64.b64encode(f.read()).decode()
+            return f'<img src="data:image/jpeg;base64,{encoded_string}" style="width: 220px; height: 220px; border-radius: 50%; object-fit: cover; border: 4px solid #FFB74D; box-shadow: 0px 4px 15px rgba(0,0,0,0.15); margin: 10px 0;" />'
+        except Exception:
+            pass
+
+    # Fallback nếu chưa tải ảnh lên
+    return '<div style="font-size: 90px; margin: 10px 0;">🐱</div>'
+
 
 # Custom CSS cho giao diện siêu cute
 st.markdown(
@@ -23,10 +46,6 @@ st.markdown(
         border: 2px solid #FFE0B2;
         text-align: center;
         margin-bottom: 20px;
-    }
-    .cat-avatar {
-        font-size: 90px;
-        margin: 10px 0;
     }
     .stButton > button {
         border-radius: 15px;
@@ -49,15 +68,15 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Khởi tạo trạng thái nuôi mèo trong session_state
+# Khởi tạo trạng thái nuôi mèo
 if "cat_name" not in st.session_state:
     st.session_state.cat_name = "Miu Miu"
 if "hunger" not in st.session_state:
-    st.session_state.hunger = 70  # Độ no (0 - 100)
+    st.session_state.hunger = 70
 if "happiness" not in st.session_state:
-    st.session_state.happiness = 80  # Độ vui (0 - 100)
+    st.session_state.happiness = 80
 if "energy" not in st.session_state:
-    st.session_state.energy = 60  # Năng lượng (0 - 100)
+    st.session_state.energy = 60
 if "level" not in st.session_state:
     st.session_state.level = 1
 if "exp" not in st.session_state:
@@ -77,25 +96,25 @@ def gain_exp(amount):
         )
 
 
-# Xác định trạng thái & cảm xúc của Mèo
-def get_cat_state():
+def get_cat_state_text():
     h = st.session_state.hunger
     happy = st.session_state.happiness
     e = st.session_state.energy
 
     if e <= 20:
-        return "😴", "Buồn ngủ lắm rồi..."
+        return "Buồn ngủ lắm rồi..."
     elif h <= 30:
-        return "😾", "Đói bụng quá meoww!"
+        return "Đói bụng quá meoww!"
     elif happy <= 30:
-        return "😿", "Đang chán đời nè..."
+        return "Đang chán đời nè..."
     elif happy >= 80 and h >= 70:
-        return "😻", "Đang cực kỳ hạnh phúc!"
+        return "Đang cực kỳ hạnh phúc!"
     else:
-        return "🐱", "Ngoan ngoãn chờ bạn chơi cùng!"
+        return "Ngoan ngoãn chờ bạn chơi cùng!"
 
 
-cat_icon, cat_status_text = get_cat_state()
+cat_status_text = get_cat_state_text()
+cat_img_tag = get_cat_image_html()
 
 # ---------------- TIÊU ĐỀ & CẤP ĐỘ ----------------
 st.title("🐾 Tiệm Nuôi Mèo Meo Meo 🐾")
@@ -109,9 +128,9 @@ col_info3.metric("Túi xu", f"{st.session_state.coins} 💰")
 st.markdown(
     f"""
     <div class="status-card">
-        <h2>{st.session_state.cat_name}</h2>
-        <div class="cat-avatar">{cat_icon}</div>
-        <p style="font-size: 18px; color: #8D4B38; font-weight: bold;">"{cat_status_text}"</p>
+        <h2 style="color: #8D4B38; margin-bottom: 0;">{st.session_state.cat_name}</h2>
+        <div>{cat_img_tag}</div>
+        <p style="font-size: 18px; color: #8D4B38; font-weight: bold; margin-top: 5px;">"{cat_status_text}"</p>
     </div>
 """,
     unsafe_allow_html=True,
