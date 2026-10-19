@@ -4,7 +4,7 @@ import random
 import streamlit as st
 
 st.set_page_config(
-    page_title="Nuôi Mèo Meo Meo 🐾",
+    page_title="Nuôi Meo Meo 🐾",
     page_icon="🐱",
     layout="centered",
     initial_sidebar_state="collapsed",
