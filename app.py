@@ -4,19 +4,18 @@ import random
 import streamlit as st
 
 st.set_page_config(
-    page_title="Nuôi Mèo Meo Meo 🐾",
+    page_title="Nuôi Mèo Tom Meo Meo 🐾",
     page_icon="🐱",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
 
-
-# Khởi tạo state cho hiệu ứng chuyển động
+# Khởi tạo hiệu ứng chuyển động
 if "animation_class" not in st.session_state:
     st.session_state.animation_class = "bounce-anim"
 
 
-# Load hình ảnh mèo và tạo hiệu ứng động đậy CSS
+# Load hình ảnh mèo và tạo hiệu ứng động CSS
 def get_cat_image_html(accessory, anim_class):
     image_file = None
     for possible_name in ["cat.jpg", "cat.png", "cat.jpeg", "cat.gif"]:
@@ -51,7 +50,7 @@ def get_cat_image_html(accessory, anim_class):
     """
 
 
-# CSS Custom bao gồm cả animation hiệu ứng chuyển động
+# CSS Hiệu ứng chuyển động mượt mà
 st.markdown(
     """
     <style>
@@ -84,7 +83,6 @@ st.markdown(
     }
     #MainMenu, footer, header {visibility: hidden;}
 
-    /* BỘ ANIMATION CHUYỂN ĐỘNG CHO MÈO */
     @keyframes bounce {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-12px); }
@@ -114,9 +112,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Khởi tạo dữ liệu game
+# Trạng thái game
 if "cat_name" not in st.session_state:
-    st.session_state.cat_name = "Tom"
+    st.session_state.cat_name = "Miu Miu"
 if "hunger" not in st.session_state:
     st.session_state.hunger = 70
 if "happiness" not in st.session_state:
@@ -152,15 +150,15 @@ cat_img_tag = get_cat_image_html(
     st.session_state.hat, st.session_state.animation_class
 )
 
-# ---------------- TIÊU ĐỀ ----------------
-st.title("🐾 Nuôi Mèo Tom Tương Tác 🐾")
+# Tiêu đề
+st.title("🐾 Nuôi Mèo Tương Tác 🐾")
 
 col_info1, col_info2, col_info3 = st.columns(3)
 col_info1.metric("Cấp độ", f"Lv.{st.session_state.level}")
 col_info2.metric("Kinh nghiệm", f"{st.session_state.exp}/100 XP")
 col_info3.metric("Túi xu", f"{st.session_state.coins} 💰")
 
-# ---------------- MÀN HÌNH MÈO TÔM ----------------
+# Hiển thị khung mèo phản ứng
 st.markdown(
     f"""
     <div class="status-card">
@@ -178,7 +176,6 @@ tab_play, tab_care, tab_shop = st.tabs(
     ["🎮 Tương Tác Vui", "🛁 Chăm Sóc", "🛍️ Cửa Hàng"]
 )
 
-# ---------------- TAB 1: TƯƠNG TÁC VUI ----------------
 with tab_play:
     st.write("🕹️ **Phản ứng & Trò chơi:**")
     col1, col2, col3 = st.columns(3)
@@ -186,20 +183,17 @@ with tab_play:
     with col1:
         if st.button("🤪 Cù lét Mèo", use_container_width=True):
             st.session_state.animation_class = "wiggle-anim"
-            st.session_state.reaction_text = "Nhột quá nhột quá xỉu mất haha! 🤣"
+            st.session_state.reaction_text = "Nhột quá nhột quá haha! 🤣"
             st.session_state.happiness = min(
                 100, st.session_state.happiness + 20
             )
-            st.session_state.energy = max(0, st.session_state.energy - 5)
             gain_exp(10)
             st.rerun()
 
     with col2:
-        if st.button("🐾 Vuốt ve Mèo", use_container_width=True):
+        if st.button("🐾 Vuốt ve", use_container_width=True):
             st.session_state.animation_class = "pulse-anim"
-            st.session_state.reaction_text = (
-                "Purr...Thích quá, vuốt nữa đi bạn ơi! 💖"
-            )
+            st.session_state.reaction_text = "Purr... Thích quá đi! 💖"
             st.session_state.happiness = min(
                 100, st.session_state.happiness + 15
             )
@@ -207,12 +201,12 @@ with tab_play:
             st.rerun()
 
     with col3:
-        if st.button("🧶 Cho vần cuộn len", use_container_width=True):
+        if st.button("🧶 Chơi cuộn len", use_container_width=True):
             st.session_state.animation_class = "shake-anim"
             found = random.randint(5, 20)
             st.session_state.coins += found
             st.session_state.reaction_text = (
-                f"Cuộn len bay lung tung! Bạn nhặt được {found} xu 💰"
+                f"Vui ghê! Bạn nhặt được {found} xu 💰"
             )
             st.session_state.happiness = min(
                 100, st.session_state.happiness + 25
@@ -220,89 +214,75 @@ with tab_play:
             gain_exp(20)
             st.rerun()
 
-# ---------------- TAB 2: CHĂM SÓC ----------------
 with tab_care:
-    st.write("📊 **Chỉ số sinh hoạt của Tom:**")
-
+    st.write("📊 **Chỉ số sinh hoạt:**")
     st.caption(f"🐟 Độ no: {st.session_state.hunger}%")
     st.progress(st.session_state.hunger / 100)
-
     st.caption(f"💖 Độ vui: {st.session_state.happiness}%")
     st.progress(st.session_state.happiness / 100)
-
     st.caption(f"⚡ Năng lượng: {st.session_state.energy}%")
     st.progress(st.session_state.energy / 100)
-
-    st.caption(f"✨ Độ sạch sẽ: {st.session_state.clean}%")
+    st.caption(f"✨ Sạch sẽ: {st.session_state.clean}%")
     st.progress(st.session_state.clean / 100)
 
     st.divider()
-    col_c1, col_c2, col_c3 = st.columns(3)
-    with col_c1:
+    c1, c2, c3 = st.columns(3)
+    with c1:
         if st.button("🥛 Uống sữa", use_container_width=True):
             st.session_state.animation_class = "bounce-anim"
             st.session_state.hunger = min(100, st.session_state.hunger + 30)
-            st.session_state.reaction_text = "Ực ực... Sữa béo ngậy ngon quá! 🍼"
+            st.session_state.reaction_text = "Ực ực... Ngon quá! 🍼"
             gain_exp(15)
             st.rerun()
-
-    with col_c2:
-        if st.button("🛁 Tắm bong bóng", use_container_width=True):
+    with c2:
+        if st.button("🛁 Tắm rửa", use_container_width=True):
             st.session_state.animation_class = "wiggle-anim"
             st.session_state.clean = 100
-            st.session_state.reaction_text = "Tắm xong thơm tho lấp lánh luôn! ✨"
+            st.session_state.reaction_text = "Thơm tho sạch sẽ rồi! ✨"
             gain_exp(15)
             st.rerun()
-
-    with col_c3:
-        if st.button("💤 Cho đi ngủ", use_container_width=True):
+    with c3:
+        if st.button("💤 Đi ngủ", use_container_width=True):
             st.session_state.animation_class = "bounce-anim"
             st.session_state.energy = 100
-            st.session_state.reaction_text = (
-                "Khò khò... Tom ngủ một giấc thật ngon! 😴"
-            )
+            st.session_state.reaction_text = "Khò khò... Ngủ ngon quá! 😴"
             gain_exp(10)
             st.rerun()
 
-# ---------------- TAB 3: CỬA HÀNG ----------------
 with tab_shop:
     st.subheader("🛍️ Tiệm Mua Sắm & Đổi Tên")
-
-    new_name = st.text_input("✏️ Đổi tên cho mèo:", value=st.session_state.cat_name)
+    new_name = st.text_input("✏️ Đổi tên mèo:", value=st.session_state.cat_name)
     if new_name != st.session_state.cat_name and new_name.strip() != "":
         st.session_state.cat_name = new_name
         st.rerun()
 
     st.divider()
-    col_s1, col_s2, col_s3 = st.columns(3)
-
-    with col_s1:
+    s1, s2, s3 = st.columns(3)
+    with s1:
         st.markdown("**👑 Nón Hoàng Gia**")
-        if st.button("Mua (50 💰)", key="b_hat1", use_container_width=True):
+        if s1.button("Mua (50 💰)", key="b_hat1", use_container_width=True):
             if st.session_state.coins >= 50:
                 st.session_state.coins -= 50
                 st.session_state.hat = "👑 Nón Hoàng Gia"
                 st.session_state.animation_class = "bounce-anim"
-                st.session_state.reaction_text = "Mèo Hoàng Gia xuất hiện đây! 👑"
+                st.session_state.reaction_text = "Oách xà lách chưa! 👑"
                 st.rerun()
             else:
                 st.error("Không đủ xu!")
-
-    with col_s2:
+    with s2:
         st.markdown("**🕶️ Kính Mát Ngầu**")
-        if st.button("Mua (50 💰)", key="b_hat2", use_container_width=True):
+        if s2.button("Mua (50 💰)", key="b_hat2", use_container_width=True):
             if st.session_state.coins >= 50:
                 st.session_state.coins -= 50
                 st.session_state.hat = "🕶️ Kính Mát"
                 st.session_state.animation_class = "pulse-anim"
-                st.session_state.reaction_text = "Trông Tom cool ngầu chưa bấy bì! 🕶️"
+                st.session_state.reaction_text = "Cool ngầu chưa bấy bì! 🕶️"
                 st.rerun()
             else:
                 st.error("Không đủ xu!")
-
-    with col_s3:
+    with s3:
         st.markdown("**❌ Gỡ phụ kiện**")
-        if st.button("Tháo ra", key="b_rm", use_container_width=True):
+        if s3.button("Tháo ra", key="b_rm", use_container_width=True):
             st.session_state.hat = "Chưa có"
             st.session_state.reaction_text = "Nhẹ cả đầu meoww! 🐾"
             st.rerun()
