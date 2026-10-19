@@ -4,31 +4,47 @@ import random
 import streamlit as st
 
 st.set_page_config(
-    page_title="Nuôi Meo Meo 🐾",
+    page_title="Nuôi Mèo Meo Meo 🐾",
     page_icon="🐱",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
 
 
-# Load hình ảnh mèo custom
-def get_cat_image_html():
+# Load hình ảnh mèo custom và kèm phụ kiện hiển thị trực tiếp
+def get_cat_image_html(accessory):
     image_file = None
     for possible_name in ["cat.jpg", "cat.png", "cat.jpeg", "cat.gif"]:
         if os.path.exists(possible_name):
             image_file = possible_name
             break
 
+    img_tag = ""
     if image_file:
         try:
             with open(image_file, "rb") as f:
                 encoded_string = base64.b64encode(f.read()).decode()
             mime_type = "image/gif" if image_file.endswith(".gif") else "image/jpeg"
-            return f'<img src="data:{mime_type};base64,{encoded_string}" style="width: 220px; height: 220px; border-radius: 50%; object-fit: cover; border: 4px solid #FFB74D; box-shadow: 0px 4px 15px rgba(0,0,0,0.15); margin: 10px 0;" />'
+            img_tag = f'<img src="data:{mime_type};base64,{encoded_string}" style="width: 220px; height: 220px; border-radius: 50%; object-fit: cover; border: 4px solid #FFB74D; box-shadow: 0px 4px 15px rgba(0,0,0,0.15);" />'
         except Exception:
             pass
 
-    return '<div style="font-size: 90px; margin: 10px 0;">🐱</div>'
+    if not img_tag:
+        img_tag = '<div style="font-size: 90px; width: 220px; height: 220px; line-height: 220px; background: #FFF; border-radius: 50%; border: 4px solid #FFB74D; margin: 0 auto;">🐱</div>'
+
+    # Hiển thị phụ kiện đeo lên mèo
+    overlay_html = ""
+    if "Nón" in accessory:
+        overlay_html = '<div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 55px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3);">👑</div>'
+    elif "Kính" in accessory:
+        overlay_html = '<div style="position: absolute; top: 75px; left: 50%; transform: translateX(-50%); font-size: 45px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3);">🕶️</div>'
+
+    return f"""
+    <div style="position: relative; display: inline-block; margin: 10px 0;">
+        {img_tag}
+        {overlay_html}
+    </div>
+    """
 
 
 # Custom CSS
@@ -116,7 +132,7 @@ def get_cat_state_text():
 
 
 cat_status_text = get_cat_state_text()
-cat_img_tag = get_cat_image_html()
+cat_img_tag = get_cat_image_html(st.session_state.hat)
 
 # ---------------- TIÊU ĐỀ & THÔNG TIN ----------------
 st.title("🐾 Tiệm Nuôi Mèo Meo Meo 🐾")
@@ -130,7 +146,7 @@ col_info3.metric("Túi xu", f"{st.session_state.coins} 💰")
 st.markdown(
     f"""
     <div class="status-card">
-        <h2 style="color: #8D4B38; margin-bottom: 0;">{st.session_state.cat_name} {f'({st.session_state.hat})' if st.session_state.hat != 'Chưa có' else ''}</h2>
+        <h2 style="color: #8D4B38; margin-bottom: 0;">{st.session_state.cat_name}</h2>
         <div>{cat_img_tag}</div>
         <p style="font-size: 18px; color: #8D4B38; font-weight: bold; margin-top: 5px;">"{cat_status_text}"</p>
     </div>
@@ -272,10 +288,10 @@ with tab_shop:
     st.divider()
 
     st.write("👑 **Trang phục & Phụ kiện:**")
-    col_a1, col_a2 = st.columns(2)
+    col_a1, col_a2, col_a3 = st.columns(3)
 
     with col_a1:
-        st.markdown("**👑 Nón Hoàng Gia**\n\nKiểu dáng sang chảnh")
+        st.markdown("**👑 Nón Hoàng Gia**")
         if st.button("Mua (50 💰)", key="buy_hat1", use_container_width=True):
             if st.session_state.coins >= 50:
                 st.session_state.coins -= 50
@@ -287,7 +303,7 @@ with tab_shop:
                 st.error("Ní không đủ xu rồi!")
 
     with col_a2:
-        st.markdown("**🕶️ Kính Mát Ngầu Lòi**\n\nĐẹp trai số 1")
+        st.markdown("**🕶️ Kính Mát Ngầu**")
         if st.button("Mua (50 💰)", key="buy_hat2", use_container_width=True):
             if st.session_state.coins >= 50:
                 st.session_state.coins -= 50
@@ -297,3 +313,10 @@ with tab_shop:
                 st.rerun()
             else:
                 st.error("Ní không đủ xu rồi!")
+
+    with col_a3:
+        st.markdown("**❌ Gỡ phụ kiện**")
+        if st.button("Tháo ra", key="remove_hat", use_container_width=True):
+            st.session_state.hat = "Chưa có"
+            st.toast("Đã tháo phụ kiện cho mèo!", icon="🐾")
+            st.rerun()
